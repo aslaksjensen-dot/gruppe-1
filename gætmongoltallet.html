@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>Gæt et tal</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            font-family: 'Segoe UI', sans-serif;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.4);
+            text-align: center;
+            width: 350px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 5px;
+            border: none;
+            border-radius: 8px;
+        }
+
+        input {
+            width: 60%;
+        }
+
+        button {
+            background-color: #00c6ff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0072ff;
+        }
+
+        #resultat, #highscore {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+            text-align: left;
+        }
+
+        li {
+            margin: 4px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Gæt et tal mellem 1 og 100</h1>
+        <input type="number" id="brugerGæt" placeholder="Dit gæt">
+        <button onclick="tjekGæt()">Gæt</button>
+        <button onclick="resetSpil()">🔁 Reset</button>
+        <div id="resultat"></div>
+        <div id="highscore">Highscore: –</div>
+        <div id="leaderboard">
+            <h3>📋 Dine gæt:</h3>
+            <ul id="gætListe"></ul>
+        </div>
+    </div>
+
+    <script>
+        let hemmeligtTal = Math.floor(Math.random() * 100) + 1;
+        let forsøg = 0;
+        let gætHistorik = [];
+        let highscore = null;
+
+        function tjekGæt() {
+            const input = document.getElementById("brugerGæt");
+            const gæt = parseInt(input.value);
+
+            if (isNaN(gæt)) {
+                document.getElementById("resultat").textContent = "⚠️ Skriv et gyldigt tal.";
+                return;
+            }
+
+            forsøg++;
+            gætHistorik.push(gæt);
+            opdaterLeaderboard();
+
+            if (gæt < hemmeligtTal) {
+                document.getElementById("resultat").textContent = "⬇️ For lavt!";
+            } else if (gæt > hemmeligtTal) {
+                document.getElementById("resultat").textContent = "⬆️ For højt!";
+            } else {
+                document.getElementById("resultat").textContent = `🎉 Du gættede rigtigt på ${forsøg} forsøg!`;
+                if (highscore === null || forsøg < highscore) {
+                    highscore = forsøg;
+                    document.getElementById("highscore").textContent = `Highscore: ${highscore} forsøg`;
+                }
+                input.disabled = true;
+            }
+        }
+
+        function opdaterLeaderboard() {
+            const liste = document.getElementById("gætListe");
+            liste.innerHTML = "";
+            gætHistorik.forEach((gæt, index) => {
+                const li = document.createElement("li");
+                li.textContent = `#${index + 1}: ${gæt}`;
+                liste.appendChild(li);
+            });
+        }
+
+        function resetSpil() {
+            hemmeligtTal = Math.floor(Math.random() * 100) + 1;
+            forsøg = 0;
+            gætHistorik = [];
+            document.getElementById("brugerGæt").value = "";
+            document.getElementById("brugerGæt").disabled = false;
+            document.getElementById("resultat").textContent = "";
+            document.getElementById("gætListe").innerHTML = "";
+        }
+    </script>
+</body>
+</html>
